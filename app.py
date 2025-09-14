@@ -1,10 +1,21 @@
-from flask import Flask, render_template
+from flask import Flask
+from backend.auth import auth_bp
+from backend.teacher import teacher_bp
+from backend.student import student_bp
+from backend.admin import admin_bp
+from backend.models import db
 
 app = Flask(__name__)
+app.config.from_object("config.Config")
 
-@app.route('/')
-def home():
-    return render_template('base.html')
+# Initialize Database
+db.init_app(app)
 
-if __name__ == '__main__':
+# Register Blueprints
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(teacher_bp, url_prefix="/teacher")
+app.register_blueprint(student_bp, url_prefix="/student")
+app.register_blueprint(admin_bp, url_prefix="/admin")
+
+if __name__ == "__main__":
     app.run(debug=True)
