@@ -7,9 +7,12 @@ from backend.models import db
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
+app.secret_key = "your-secret-key"  # Replace with a secure key
 
 # Initialize Database
 db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 # Register Blueprints
 app.register_blueprint(auth_bp, url_prefix="/auth")
