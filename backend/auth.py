@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from backend.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint("auth_bp", __name__)
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -21,7 +21,7 @@ def login():
                 return redirect(url_for("admin.dashboard"))
         else:
             flash("Invalid credentials", "danger")
-    return render_template("login.html")
+    return render_template("accounts/login.html")
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
