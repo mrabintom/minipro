@@ -60,21 +60,6 @@
         .btn-submit:hover {
             opacity: 0.9;
         }
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            gap: 20px;
-        }
-        .nav-link {
-            text-decoration: none;
-            color: #5038ED;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #40a9ff;
-        }
     </style>
 </head>
 
@@ -116,7 +101,6 @@
             {% endwith %}
         </div>
     </div>
-
 
     {% if student and student[6] == password and student[7] %}
         <!-- Allow login and redirect to the appropriate page -->

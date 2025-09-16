@@ -6,3 +6,11 @@ git push origin main
 
 PULL
 git pull origin main
+
+
+psql -U postgres
+psql -U postgres -d minipro
+
+
+
+.venv\Scripts\activate
