@@ -2,14 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from backend.models import db, Admin, Teacher, Student, Attendance, Fine
 import os
 from werkzeug.utils import secure_filename
+import psycopg2
 
 app = Flask(__name__)
-<<<<<<< HEAD
 app.secret_key = "supersecret"
-=======
 app.config.from_object("config.Config")
 app.secret_key = "your-secret-key"  # Replace with a secure key
->>>>>>> 26a883ce6dfca0e234752929d138619e35c8e59f
 
 # Set config directly
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:Admin%40123@localhost:5432/minipro"
@@ -20,6 +18,14 @@ with app.app_context():
 
 with app.app_context():
     db.create_all()
+
+# psycopg2 connection (keep this at the top, after Flask app setup)
+conn = psycopg2.connect(
+    host="localhost",
+    dbname="minipro",
+    user="postgres",
+    password="Admin@123"
+)
 
 @app.route('/')
 def index():
@@ -59,25 +65,15 @@ def login():
 
 @app.route('/admin')
 def admin_dashboard():
-    teachers = Teacher.query.all()
-    students = Student.query.all()
-    fines = Fine.query.all()
-    return render_template("admin.html", 
-                           name=session.get("name"),
-                           email=session.get("email"),
-                           teachers=teachers,
-                           students=students,
-                           fines=fines)
+    return render_template('admin.html')
 
 @app.route('/teacher')
 def teacher_dashboard():
-    # Add your logic here
-    return render_template("teacher.html", name=session.get("name"))
+    return render_template('teacher.html')
 
 @app.route('/student')
 def student_dashboard():
-    # Add your logic here
-    return render_template("student.html", name=session.get("name"))
+    return render_template('student.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -87,16 +83,15 @@ def register():
         email = request.form['email']
         mobile = request.form['mobile']
         parent_mobile = request.form['parent_mobile']
-        password = request.form['passwords']  # match the form field name
+        password = request.form['passwords']  # matches form input name
         photo = request.files['photo']
 
-        # Save photo
         filename = None
         if photo:
             filename = secure_filename(photo.filename)
-            photo.save(os.path.join('static/images', filename))
+            photo_path = os.path.join('static/images', filename)
+            photo.save(photo_path)
 
-        # Insert into database
         new_student = Student(
             name=name,
             department=department,
@@ -107,11 +102,52 @@ def register():
             photo=filename
         )
 
-        db.session.add(new_student)
-        db.session.commit()
-        flash("Registration successful! You can login now.", "success")
-        return redirect(url_for('login'))
+        try:
+            db.session.add(new_student)
+            db.session.commit()
+            flash("Registration successful! You can log in now.", "success")
+            return redirect(url_for('index') + "#login")
+
+        except Exception as e:
+            db.session.rollback()
+            flash("Error: " + str(e), "danger")
+            return redirect(url_for('register'))
+
     return render_template('registration.html')
+
+@app.route('/login_psycopg', methods=['POST'])
+def login_psycopg():
+    email = request.form['email']
+    password = request.form['password']
+
+    cur = conn.cursor()
+
+    # 1. Check students
+    cur.execute("SELECT * FROM students WHERE email=%s AND password=%s", (email, password))
+    student = cur.fetchone()
+    if student:
+        cur.close()
+        return redirect(url_for('student_dashboard'))
+
+    # 2. Check teachers
+    cur.execute("SELECT * FROM teachers WHERE email=%s AND password=%s", (email, password))
+    teacher = cur.fetchone()
+    if teacher:
+        cur.close()
+        return redirect(url_for('teacher_dashboard'))
+
+    # 3. Check admins
+    cur.execute("SELECT * FROM admins WHERE email=%s AND password=%s", (email, password))
+    admin = cur.fetchone()
+    if admin:
+        cur.close()
+        return redirect(url_for('admin_dashboard'))
+
+    cur.close()
+
+    # If not found anywhere
+    flash("Invalid email or password", "danger")
+    return redirect(url_for('index') + "#login")
 
 if __name__ == "__main__":
     app.run(debug=True)

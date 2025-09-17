@@ -20,7 +20,7 @@ class Teacher(db.Model):
     status = db.Column(db.Boolean, default=False)
 
 class Student(db.Model):
-    __tablename__ = "students"   # 👈 important, ensure this matches your real table name
+    __tablename__ = "students"  # must match your actual table name in DB
     student_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     department = db.Column(db.String(20), nullable=False)

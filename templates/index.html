@@ -161,27 +161,39 @@
 
 
 <section id="login" class="fade-in">
-    <h2 class="section-title">LOGIN</h2>
-    <form class="contact-form glass-card">
-        <div class="form-group">
-            <input type="email" placeholder="Email" required>
-        </div>
-        <div class="form-group">
-            <input type="password" placeholder="Password" required>
-        </div>
+  <h2 class="section-title">LOGIN</h2>
+  <form class="contact-form glass-card" method="POST" action="/login_psycopg">
+      <div class="form-group">
+          <input type="email" name="email" placeholder="Email" required>
+      </div>
+      <div class="form-group">
+          <input type="password" name="password" placeholder="Password" required>
+      </div>
 
-        <!-- Button container -->
-        <div class="form-buttons">
-            <button type="button" class="neural-btn" >
-                REGISTER
-            </button> 
-            &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
-            <button type="submit" class="neural-btn">
-                LOGIN
-            </button>
-        </div>
-    </form>
+      <!-- Button container -->
+      <div class="form-buttons">
+          <button type="button" class="neural-btn" onclick="window.location.href='{{ url_for('register') }}'">
+              REGISTER
+          </button>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <button type="submit" class="neural-btn">
+              LOGIN
+          </button>
+      </div>
+  </form>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} text-center" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 </section>
+
 
 
 

@@ -139,8 +139,8 @@
             });
         });
 
-        // Form submission
-        document.querySelector('.contact-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Message sent! (This is a demo)');
-        });
+      // Form submission handler removed to allow normal form submission for registration
+// document.querySelector('.contact-form').addEventListener('submit', (e) => {
+//     e.preventDefault();
+//     alert('Message sent! (This is a demo)');
+// });
