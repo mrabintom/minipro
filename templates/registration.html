@@ -1,72 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - Smart Attendance AI</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-    }
-
-    .left-section {
-      background: linear-gradient(to right, #5038ED, #9181F4);
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: left;
-      padding: 2rem;
-      text-align: left;
-    }
-
-    .left-section h1 {
-      font-size: 65px;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .image-preview {
-      margin-top: 10px;
-      width: 150px;
-      height: 150px;
-      border-radius: 8px;
-      border: 2px solid #ddd;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: #f8f9fa;
-    }
-
-    .image-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  </style>
+    <title>Register</title>
 </head>
-
 <body>
-  <div class="w-100 d-flex flex-wrap">
-      <!-- Left Section -->
-      <div class="col-12 col-md-6 left-section text-center text-md-start">
-        <h1>
-          <span>Smart</span><br>
-          <span>Attendance</span><br>
-          <span>AI.</span>
-        </h1>
-      </div>
+    <h2>Student Registration</h2>
+    <form method="POST" action="/register" enctype="multipart/form-data">
+        <!-- Name -->
+        <label>Full Name:</label>
+        <input type="text" name="name" required><br><br>
 
-      <!-- Right Section -->
-      <div class="col-12 col-md-6 d-flex align-items-center justify-content-center py-5">
-        <div class="card shadow-lg p-4 rounded-4 w-100 mx-3" style="max-width: 450px;">
-          <h3 class="text-center fw-bold mb-4">Register</h3>
+        <!-- Department -->
+        <label>Department:</label>
+        <select name="department" required>
+            <option value="MBA">MBA</option>
+            <option value="MCA">MCA</option>
+        </select><br><br>
 
+<<<<<<< HEAD
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
@@ -120,24 +71,33 @@
         </div>
       </div>
   </div>
+=======
+        <!-- Email -->
+        <label>Email:</label>
+        <input type="email" name="email" required><br><br>
+>>>>>>> 26a883ce6dfca0e234752929d138619e35c8e59f
 
-  <script>
-    function previewImage(event) {
-      const preview = document.getElementById("imagePreview");
-      preview.innerHTML = "";
-      const file = event.target.files[0];
-      if (file) {
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        preview.appendChild(img);
-        preview.style.display = "flex";
-      } else {
-        preview.style.display = "none";
-      }
-    }
-  </script>
+        <!-- Mobile -->
+        <label>Mobile:</label>
+        <input type="text" name="mobile" required><br><br>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Parent Mobile -->
+        <label>Parent Mobile:</label>
+        <input type="text" name="parent_mobile" required><br><br>
+
+        <!-- Password -->
+        <label>Password:</label>
+        <input type="password" name="password" required><br><br>
+
+        <!-- Upload Image -->
+        <label>Upload Image:</label>
+        <input type="file" name="image" accept="image/*" required><br><br>
+
+        <!-- Buttons -->
+        <button type="submit">Register</button>
+        <button type="reset">Cancel</button>
+    </form>
+
+    <a href="/login">Already have an account? Login</a>
 </body>
-
 </html>

@@ -4,12 +4,19 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+<<<<<<< HEAD
 app.secret_key = "supersecret"
+=======
+app.config.from_object("config.Config")
+app.secret_key = "your-secret-key"  # Replace with a secure key
+>>>>>>> 26a883ce6dfca0e234752929d138619e35c8e59f
 
 # Set config directly
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:Admin%40123@localhost:5432/minipro"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 with app.app_context():
     db.create_all()
