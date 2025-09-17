@@ -24,27 +24,6 @@ https://www.tooplate.com/view/2139-neural-portfolio
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
         }
-        /* Force white text in main sections */
-                #about h2, 
-                #about h3, 
-                #about p,
-                #features h2,
-                #features h3,
-                #features p,
-                #login h2,
-                #login p,
-                #login input,
-                #login button {
-                color: #ffffff !important;
-                }
-
-                /* Optional: brighten paragraph gray if you don’t want pure white */
-                #about p,
-                #features p {
-                color: #e0e0e0 !important;
-}
-
-
 
         body {
             font-family: 'Exo 2', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -378,13 +357,6 @@ https://www.tooplate.com/view/2139-neural-portfolio
             z-index: 2;
         }
 
-        section input, 
-section textarea {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #ffffff !important;
-}
-
         .section-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 3rem;
@@ -466,7 +438,6 @@ section textarea {
             grid-template-columns: 1fr 2fr;
             gap: 50px;
             align-items: center;
-            
         }
 
         .about-image {
