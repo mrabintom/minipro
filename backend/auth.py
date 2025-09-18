@@ -1,40 +1,61 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from backend.models import db, User
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from backend.models import db, Student, Teacher, Admin
 
-auth_bp = Blueprint("auth_bp", __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route("/login", methods=["GET", "POST"])
+@auth_bp.route("/")
+def index():
+    return render_template("index.html")
+
+@auth_bp.route("/login", methods=["POST"])
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    role = request.form.get("role")
+    email = request.form.get("email")
+    password = request.form.get("password")
 
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
-            flash("Login successful!", "success")
-            if user.role == "teacher":
-                return redirect(url_for("teacher.dashboard"))
-            elif user.role == "student":
-                return redirect(url_for("student.dashboard"))
-            elif user.role == "admin":
-                return redirect(url_for("admin.dashboard"))
-        else:
-            flash("Invalid credentials", "danger")
-    return render_template("accounts/login.html")
+    if role == "student":
+        user = Student.query.filter_by(email=email, password=password).first()
+        if user:
+            session.clear()
+            session["user_id"] = user.student_id
+            session["role"] = "student"
+            session["name"] = user.name
+            session["department"] = user.department
+            flash("Student login successful!", "success")
+            return redirect(url_for("student_dashboard"))
+        flash("Invalid student credentials!", "danger")
 
-@auth_bp.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = generate_password_hash(request.form["password"])
-        role = request.form["role"]
+    elif role == "teacher":
+        user = Teacher.query.filter_by(teacher_email=email, teacher_password=password).first()
+        if user:
+            session.clear()
+            session["user_id"] = user.teacher_id
+            session["role"] = "teacher"
+            session["name"] = user.teacher_name
+            session["department"] = user.teacher_department
+            flash("Teacher login successful!", "success")
+            return redirect(url_for("teacher_dashboard"))
+        flash("Invalid teacher credentials!", "danger")
 
-        new_user = User(username=username, password=password, role=role)
-        db.session.add(new_user)
-        db.session.commit()
+    elif role == "admin":
+        user = Admin.query.filter_by(admin_email=email, admin_password=password).first()
+        if user:
+            session.clear()
+            session["user_id"] = user.admin_id
+            session["role"] = "admin"
+            session["name"] = user.admin_name
+            session["department"] = user.admin_department
+            flash("Admin login successful!", "success")
+            return redirect(url_for("admin_dashboard"))
+        flash("Invalid admin credentials!", "danger")
 
-        flash("Registration successful!", "success")
-        return redirect(url_for("auth.login"))
+    else:
+        flash("Please select a valid role.", "danger")
 
-    return render_template("registration.html")
+    return redirect(url_for("auth.index") + "#login")
+
+@auth_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully", "info")
+    return redirect(url_for("auth.index"))

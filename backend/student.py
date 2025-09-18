@@ -1,18 +1,79 @@
-from flask import Blueprint, render_template
-from backend.models import db, Admin, Teacher, Student, Attendance, Fine
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from backend.models import db, Student, Attendance
+import os
+from werkzeug.utils import secure_filename
 
-student_bp = Blueprint('student_bp', __name__)
+student_bp = Blueprint("student", __name__)
 
-@student_bp.route('/')
+# --- Student Dashboard ---
+@student_bp.route("/dashboard")
 def dashboard():
-    return render_template('student.html')
+    if "user_id" not in session or session.get("role") != "student":
+        return redirect(url_for("auth.index") + "#login")
+    student_id = session["user_id"]
+    # Fetch all attendance records for this student
+    attendance_records = Attendance.query.filter_by(student_id=student_id).order_by(Attendance.date.desc()).all()
+    return render_template("student.html", attendance_records=attendance_records, name=session.get("name"))
 
-@student_bp.route('/profile/<int:student_id>')
-def profile(student_id):
-    student = Student.query.get(student_id)
-    return render_template('student_profile.html', student=student)
+# --- Student Registration ---
+@student_bp.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        department = request.form.get("department")
+        email = request.form.get("email")
+        mobile = request.form.get("mobile")
+        parent_mobile = request.form.get("parent_mobile")
+        password = request.form.get("password")   # ✅ field name fixed
 
-# Add more student routes as needed
+        # Save photo if uploaded
+        photo = request.files.get("photo")
+        filename = None
+        if photo and photo.filename != "":
+            filename = secure_filename(photo.filename)
+            photo_path = os.path.join("static/images", filename)
+            photo.save(photo_path)
 
-from backend.student import student_bp
-app.register_blueprint(student_bp, url_prefix='/student')
+        new_student = Student(
+            name=name,
+            department=department,
+            email=email,
+            mobile=mobile,
+            parent_mobile=parent_mobile,
+            password=password,
+            photo=filename
+        )
+        try:
+            db.session.add(new_student)
+            db.session.commit()
+            flash("Registration successful! Please login.", "success")
+            return redirect(url_for("auth.index") + "#login")  # back to login
+        except Exception as e:
+            db.session.rollback()
+            flash("Error: " + str(e), "danger")
+            return redirect(url_for("student.register"))
+
+    return render_template("registration.html")
+
+# --- Student Login ---
+@student_bp.route("/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+    student = Student.query.filter_by(email=email, password=password).first()
+    if student:
+        session["user_id"] = student.student_id
+        session["role"] = "student"
+        session["name"] = student.name
+        flash("Welcome " + student.name, "success")
+        return redirect(url_for("student.dashboard"))
+    else:
+        flash("Invalid email or password", "danger")
+        return redirect(url_for("auth.index") + "#login")
+
+# --- Student Logout ---
+@student_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully", "info")
+    return redirect(url_for("auth.index"))
