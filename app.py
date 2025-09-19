@@ -32,6 +32,13 @@ def home():
     return render_template("index.html")
 
 
+# Optional: direct /student/register to the student registration page
+@app.route("/register")
+def register_redirect():
+    return redirect(url_for("student.register"))
+
+
+
 @app.route("/index")
 def index_redirect():
     return redirect(url_for("auth.index"))
