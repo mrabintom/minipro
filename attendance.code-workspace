@@ -1,8 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "../../../Downloads/latest/miniproject/attendance"
+			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "dist"
+	}
 }

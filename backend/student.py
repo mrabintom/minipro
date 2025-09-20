@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from backend.models import db, Student, Attendance
 import os
 from werkzeug.utils import secure_filename
+from datetime import date, datetime
 
 student_bp = Blueprint("student", __name__)
 
@@ -11,9 +12,22 @@ def dashboard():
     if "user_id" not in session or session.get("role") != "student":
         return redirect(url_for("auth.index") + "#login")
     student_id = session["user_id"]
-    # Fetch all attendance records for this student
+
     attendance_records = Attendance.query.filter_by(student_id=student_id).order_by(Attendance.date.desc()).all()
-    return render_template("student.html", attendance_records=attendance_records, name=session.get("name"))
+
+    # Exclude Saturdays (5) and Sundays (6)
+    working_days = [r for r in attendance_records if r.date.weekday() not in (5, 6)]
+    total_days = len(working_days)
+    present_days = sum(1 for r in working_days if r.time)
+
+    attendance_percentage = round((present_days / total_days) * 100, 2) if total_days > 0 else 0
+
+    return render_template(
+        "student.html",
+        attendance_records=attendance_records,
+        attendance_percentage=attendance_percentage,
+        name=session.get("name")
+    )
 
 # --- Student Registration ---
 @student_bp.route("/register", methods=["GET", "POST"])

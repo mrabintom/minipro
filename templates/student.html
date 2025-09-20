@@ -78,10 +78,13 @@
                             <div class="card metric-card gradient-purple">
                                 <div class="card-body">
                                     <h6 class="text-white-50 small mb-2">Attendance Percentage</h6>
-                                    <div class="display-6 fw-semibold text-white">96%</div>
-                                    <div class="text-white-50 small">This Month</div>
+                                    <div class="display-6 fw-semibold text-white">
+        {{ attendance_percentage }}%
+    </div>
+    <div class="text-white-50 small">This Month</div>
                                 </div>
                             </div>
+                            
                         </div>
                         <div class="col-sm-6 col-xl-4">
                             <div class="card metric-card gradient-yellow">
@@ -134,7 +137,7 @@
         <div class="card-body">
             <h5 class="card-title">Attendance Details</h5>
             <div class="table-responsive">
-                <table class="table align-middle">
+                <table class="table align-middle" id="attendanceTable">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -144,21 +147,27 @@
                     </thead>
                     <tbody>
                         {% for record in attendance_records %}
-                        <tr>
+                        <tr class="attendance-row{% if loop.index > 5 %} d-none{% endif %}">
                             <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
                             <td>
-                                {% if record.entry_time %}
-                                    {{ record.entry_time.strftime('%H:%M') }}
-                                {% else %}
-                                    -
-                                {% endif %}
+                                {% if record.date.weekday() in [5, 6] %}
+                -
+            {% elif record.time %}
+                {{ record.time.strftime('%H:%M') }}
+            {% else %}
+                -
+            {% endif %}
                             </td>
                             <td>
-                                {% if record.entry_time %}
-                                    <span class="badge bg-success">Present</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Absent</span>
-                                {% endif %}
+                                {% if record.date.weekday() == 5 %}
+                <span class="badge bg-info text-dark">Saturday Holiday</span>
+            {% elif record.date.weekday() == 6 %}
+                <span class="badge bg-info text-dark">Sunday Holiday</span>
+            {% elif record.time %}
+                <span class="badge bg-success">Present</span>
+            {% else %}
+                <span class="badge bg-danger">Absent</span>
+            {% endif %}
                             </td>
                         </tr>
                         {% else %}
@@ -169,10 +178,25 @@
                     </tbody>
                 </table>
             </div>
+            {% if attendance_records|length > 5 %}
+            <button class="btn btn-outline-primary" id="showAllAttendanceBtn">More Attendance Details</button>
+            {% endif %}
         </div>
-        <button class="btn btn-outline-primary">More Attendance Details</button>
     </div>
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById("showAllAttendanceBtn");
+        if (btn) {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll("#attendanceTable .attendance-row.d-none").forEach(function(row) {
+                    row.classList.remove("d-none");
+                });
+                btn.style.display = "none";
+            });
+        }
+    });
+</script>
                 <!-- Fine Details -->
                 <section id="fine" class="panel-section">
                     <div class="card shadow-sm">
